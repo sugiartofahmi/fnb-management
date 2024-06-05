@@ -7,46 +7,46 @@ import {
   destroy,
 } from '../services/product.service';
 import {
-  productResponseSchema,
-  productQueryParamSchema,
-  productCreateRequestSchema,
-  productUpdateRequestSchema,
   queryParamsSchema,
-  dataResponseSchema,
-  dataSingleResponseSchema,
+  responseSchema,
+  productSchema,
+  productCreateSchema,
+  productUpdateSchema,
 } from '@fms/entities';
+import { z } from 'zod';
 
 export const productController = router({
   findMany: procedure
-    .output(dataResponseSchema(productResponseSchema))
+    .output(responseSchema(productSchema))
     .input(queryParamsSchema)
     .query(async ({ input }) => {
       return await findMany(input);
     }),
 
   findOne: procedure
-    .input(productQueryParamSchema.pick({ id: true }))
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
     .query(async ({ input }) => {
       return await findOne(input?.id as string);
     }),
 
-  create: procedure
-    .output(dataSingleResponseSchema(productResponseSchema))
-    .input(productCreateRequestSchema)
-    .mutation(async ({ input }) => {
-      return await create(input);
-    }),
+  create: procedure.input(productCreateSchema).mutation(async ({ input }) => {
+    return await create(input);
+  }),
 
-  update: procedure
-    .output(dataSingleResponseSchema(productResponseSchema))
-    .input(productUpdateRequestSchema)
-    .mutation(async ({ input }) => {
-      return await update(input);
-    }),
+  update: procedure.input(productUpdateSchema).mutation(async ({ input }) => {
+    return await update(input);
+  }),
 
   delete: procedure
-    .output(dataSingleResponseSchema(productResponseSchema))
-    .input(productQueryParamSchema.pick({ id: true }))
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
     .mutation(async ({ input }) => {
       return await destroy(input.id as string);
     }),

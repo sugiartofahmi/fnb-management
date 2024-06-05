@@ -4,7 +4,6 @@ export const baseSchema = z.object({
   id: z.string().optional().nullable(),
   createdAt: z.coerce.date().optional().nullable(),
   updatedAt: z.coerce.date().optional().nullable(),
-  deletedAt: z.coerce.date().optional().nullable(),
 });
 
 export const metaResponseSchema = z.object({
@@ -35,4 +34,11 @@ export const dataSingleResponseSchema = <T extends ZodTypeAny>(data: T) =>
   z.object({
     message: z.string().optional(),
     data: z.object({ ...(data as object) }).optional(),
+  });
+
+export const responseSchema = <T extends ZodTypeAny>(data: T) =>
+  z.object({
+    message: z.string().optional(),
+    data: z.array(data).optional(),
+    meta: metaResponseSchema.optional(),
   });

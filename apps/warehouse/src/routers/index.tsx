@@ -3,7 +3,7 @@ import { LoginPage } from './login';
 import { Dashboard } from './dashboard/default';
 import { DashboardNotification } from './dashboard/notification';
 import { DashboardLayout } from './dashboard/layout';
-import { isAuthenticated, logOut, pagePermission } from '@fms/utilities';
+import { logOut, pagePermission } from '@fms/utilities';
 import {
   PERMISSION_INGREDIENTS,
   PERMISSION_NOTIFICATION,
@@ -20,6 +20,9 @@ import { DashboardIngredient } from './dashboard/ingredient';
 import { DashboardProduct } from './dashboard/product';
 import { DashboardProductEdit } from './dashboard/product/_id/edit';
 import { DashboardProductCreate } from './dashboard/product/create/create';
+import { EditRole } from './dashboard/role/modules';
+import { AuthProvider, GuestProvider } from '@fms/web-modules';
+import { tokenService } from '@fms/web-services';
 
 export const router = createBrowserRouter([
   {
@@ -28,8 +31,11 @@ export const router = createBrowserRouter([
   },
   {
     path: '/auth/login',
-    element: <LoginPage />,
-    loader: () => (isAuthenticated ? redirect('/dashboard') : null),
+    element: (
+      <GuestProvider>
+        <LoginPage />
+      </GuestProvider>
+    ),
   },
   {
     path: '/auth/logout',
@@ -40,8 +46,18 @@ export const router = createBrowserRouter([
   },
   {
     path: '/dashboard',
-    element: <DashboardLayout />,
-    loader: () => (isAuthenticated ? null : redirect('/auth/login')),
+    element: (
+      <AuthProvider>
+        <DashboardLayout />
+      </AuthProvider>
+    ),
+    errorElement: (
+      <div className="h-screen flex items-center w-full justify-center">
+        <h1 className="text-4xl font-bold text-error-600">
+          You are being redirected
+        </h1>
+      </div>
+    ),
     children: [
       {
         path: '',
@@ -81,6 +97,11 @@ export const router = createBrowserRouter([
       {
         path: 'role',
         element: <DashboardRole />,
+        loader: () => pagePermission([PERMISSION_ROLE.READ_ROLE]),
+      },
+      {
+        path: 'role/:id/edit',
+        element: <EditRole />,
         loader: () => pagePermission([PERMISSION_ROLE.READ_ROLE]),
       },
       {

@@ -17,7 +17,6 @@ export const DashboardProduct: FC = (): ReactElement => {
   const { data, refetch } = trpc.product.findMany.useQuery({
     search: debounceValue || undefined,
   });
-  console.log(data);
 
   const { mutate } = trpc.product.delete.useMutation()
 
@@ -85,6 +84,7 @@ export const DashboardProduct: FC = (): ReactElement => {
           handleSearch={(e) => setSearch(e.target.value)}
           createLink='create'
           createLabel='+ Add Produk'
+          searchBox
         />
       </div>
     </Suspense>
